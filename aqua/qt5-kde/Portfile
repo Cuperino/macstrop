@@ -1102,19 +1102,19 @@ if { (${subport} eq ${name}) || (${subport} eq "${name}-x11") } {
 
     if {${subport} ne "${name}-x11"} {
         platform darwin {
-            variant mariadb55 conflicts mysql56 mysql57 description {use MariaDB v5.5} {}
-            variant mysql56 conflicts mariadb55 mysql57 description {use MySQL v5.6} {}
-            variant mysql57 conflicts mariadb55 mysql56 description {use MySQL v5.7} {}
-            switch_variant mysql56 mysql57 {
-                "mysql56" -
-                "mysql57" {
-                    depends_lib-append port:${variant}
-                }
-                default {
-                    default_variants-append +mariadb55
-                    depends_lib-append port:mariadb
-                }
-            }
+            # variant mariadb55 conflicts mysql56 mysql57 description {use MariaDB v5.5} {}
+            # variant mysql56 conflicts mariadb55 mysql57 description {use MySQL v5.6} {}
+            # variant mysql57 conflicts mariadb55 mysql56 description {use MySQL v5.7} {}
+            # switch_variant mysql56 mysql57 {
+            #     "mysql56" -
+            #     "mysql57" {
+            #         depends_lib-append port:${variant}
+            #     }
+            #     default {
+            #         default_variants-append +mariadb55
+            #         depends_lib-append port:mariadb
+            #     }
+            # }
 
             variant gstreamer description {build GStreamer support, needed for the QAudioDecoder class} {}
             if {[variant_isset gstreamer]} {
@@ -2053,21 +2053,21 @@ foreach sp ${qt5.kde_stubports} {
                 long_description \
                                 this is a stub subport for Qt5's ${sp} which is included in port:${name}
                 # we're a stub but we still should pass through relevant variants
-                variant mariadb55 conflicts mysql56 mysql57 description {use MariaDB v5.5} {}
-                variant mysql56 conflicts mariadb55 mysql57 description {use MySQL v5.6} {}
-                variant mysql57 conflicts mariadb55 mysql56 description {use MySQL v5.7} {}
-                switch_variant mariadb55 mysql56 mysql57 {
-                    "mysql56" -
-                    "mysql57" {
-                        global qt5_dependency
-                        require_active_variants ${qt5_dependency} ${variant}
-                    }
-                    default {
-                        global qt5_dependency
-                        default_variants-append +mariadb55
-                        require_active_variants ${qt5_dependency} mariadb55
-                    }
-                }
+                # variant mariadb55 conflicts mysql56 mysql57 description {use MariaDB v5.5} {}
+                # variant mysql56 conflicts mariadb55 mysql57 description {use MySQL v5.6} {}
+                # variant mysql57 conflicts mariadb55 mysql56 description {use MySQL v5.7} {}
+                # switch_variant mariadb55 mysql56 mysql57 {
+                #     "mysql56" -
+                #     "mysql57" {
+                #         global qt5_dependency
+                #         require_active_variants ${qt5_dependency} ${variant}
+                #     }
+                #     default {
+                #         global qt5_dependency
+                #         default_variants-append +mariadb55
+                #         require_active_variants ${qt5_dependency} mariadb55
+                #     }
+                # }
             }
             default {
                 description     stub\; part of port:${name}
