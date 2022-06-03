@@ -758,32 +758,32 @@ array set sql_plugins {
             ""
         }
     }
-    {mysql MySQL "revision 0"} {
-        {
-            "mariadb55"
-            "port:mariadb"
-            "${prefix}/include/mariadb/mysql"
-            "${prefix}/lib/mariadb/mysql"
-            "-lmysqlclient_r"
-            ""
-        }
-        {
-            "mysql57"
-            "port:mysql57"
-            "${prefix}/include/mysql57/mysql"
-            "${prefix}/lib/mysql57/mysql"
-            "-lmysqlclient_r"
-            ""
-        }
-        {
-            "mysql56"
-            "port:mysql56"
-            "${prefix}/include/mysql56/mysql"
-            "${prefix}/lib/mysql56/mysql"
-            "-lmysqlclient_r"
-            ""
-        }
-    }
+    # {mysql MySQL "revision 0"} {
+    #     {
+    #         "mariadb55"
+    #         "port:mariadb"
+    #         "${prefix}/include/mariadb/mysql"
+    #         "${prefix}/lib/mariadb/mysql"
+    #         "-lmysqlclient_r"
+    #         ""
+    #     }
+    #     {
+    #         "mysql57"
+    #         "port:mysql57"
+    #         "${prefix}/include/mysql57/mysql"
+    #         "${prefix}/lib/mysql57/mysql"
+    #         "-lmysqlclient_r"
+    #         ""
+    #     }
+    #     {
+    #         "mysql56"
+    #         "port:mysql56"
+    #         "${prefix}/include/mysql56/mysql"
+    #         "${prefix}/lib/mysql56/mysql"
+    #         "-lmysqlclient_r"
+    #         ""
+    #     }
+    # }
 }
 
 # because CPATH is set, pkgconfig does not include ${prefix}/lib and ${prefix}/include even when requested
@@ -1229,7 +1229,8 @@ foreach {module module_info} [array get modules] {
                 -shared           \
                 -accessibility
 
-            foreach driver { db2 ibase mysql oci odbc psql sqlite sqlite2 tds } {
+            # foreach driver { db2 ibase mysql oci odbc psql sqlite sqlite2 tds } {
+            foreach driver { db2 ibase oci odbc psql sqlite sqlite2 tds } {
                 configure.args-append -no-sql-${driver}
             }
 
