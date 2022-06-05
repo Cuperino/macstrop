@@ -11,7 +11,7 @@ name                ${basename}${namesuffix}
 
 ui_debug "Port ${subport}, configure.optflags=${configure.optflags} configure.compiler=${configure.compiler}"
 
-version             5.9.8
+version             5.15.4
 # we no longer include the fallback to Qt 5.3 for OS X 10.6 (use port:qt53-kde for that)
 set QT53            no
 
@@ -45,7 +45,7 @@ if {![variant_isset qt5kde]} {
 PortGroup           qt5 1.0
 
 use_xcode           yes
-compiler.cxx_standard 2011
+compiler.cxx_standard 2017
 
 if {${subport} ne "${name}-qtwebengine"} {
     PortGroup       muniversal 1.0
@@ -129,7 +129,7 @@ set branch          [qt5.active_branch [join [lrange [split ${version} .] 0 1] .
 
 # minimal version variables:
 set QT59            yes
-set PF59x           "qt59/"
+set PF59x           "qt515/"
 # set PF59x           "qt594/"
 # set PF59x           "qt595/"
 # set PF59x           "qt596/"
@@ -171,8 +171,8 @@ set qtwebkit_is_stub yes
 
 if {${subport} ne "${name}-qtwebkit"} {
     distfiles       ${distname}${extract.suffix}
-    checksums       rmd160  631c0f7096a718234ef3cc69f6c968cf300e8a36 \
-                    sha256  86aca7dc37f161fc730a9d4f6bddf684962ca560327682e282ff61bf8b859c36
+    checksums       md5     5b6bba4f5f2749ed259e734a082e3b4e \
+                    sha256  615ff68d7af8eef3167de1fd15eac1b150e1fd69d1e2f4239e54447e7797253b
 #                     size    461084404
 }
 
@@ -321,28 +321,28 @@ if { ${subport} eq ${name} || ${subport} eq "${name}-zz-docs" || ${subport} eq "
     }
 
     # When testing, ensure that a universal object file is not created inadvertently.
-    patchfiles-append       ${PF59x}patch-machtest.diff
+    # patchfiles-append       ${PF59x}patch-machtest.diff
 
     # see http://stackoverflow.com/questions/14506151/invalid-symbol-redefinition-in-inline-asm-on-llvm
-    patchfiles-append       ${PF59x}patch-tst_benchlibcallgrind.diff
+    #patchfiles-append       ${PF59x}patch-tst_benchlibcallgrind.diff
 
-    if {${subport} ne "${name}-x11"} {
-        # see #44934 (and #35067 for the qt4-mac version)
-        patchfiles-append   ${PF59x}patch-shared.diff
-    }
+    #if {${subport} ne "${name}-x11"} {
+    #    # see #44934 (and #35067 for the qt4-mac version)
+    #    patchfiles-append   ${PF59x}patch-shared.diff
+    #}
 
-    # Mac menu items shouldn't have icons according to the HIG (and I agree)
-    patchfiles-append       ${PF59x}patch-no-icons-in-menus.diff
-    patchfiles-append       ${PF59x}patch-find-opengl.diff
-    # correct the font directories returned by QStandardPaths (incorporated into the qsp patch #4):
-    # patchfiles-append   fix-qsp_fontlocations.patch
-    # patch QStandardPaths so that it can optionally return XDG-compliant locations
-    # the patch of headers.pri is in a separate file because it contains very long lines.
-    # The linux patch is safe to apply on OS X and probably required on FreeBSD
-    patchfiles-append       ${PF59x}fix-qstandardpaths6.patch \
-                            ${PF59x}fix-qstandardpaths-headerspri.patch \
-                            ${PF59x}fix-qstandardpaths-linux.patch \
-                            ${PF59x}patch-lookup-css-monospace-font.diff
+    # # Mac menu items shouldn't have icons according to the HIG (and I agree)
+    # patchfiles-append       ${PF59x}patch-no-icons-in-menus.diff
+    # patchfiles-append       ${PF59x}patch-find-opengl.diff
+    # # correct the font directories returned by QStandardPaths (incorporated into the qsp patch #4):
+    # # patchfiles-append   fix-qsp_fontlocations.patch
+    # # patch QStandardPaths so that it can optionally return XDG-compliant locations
+    # # the patch of headers.pri is in a separate file because it contains very long lines.
+    # # The linux patch is safe to apply on OS X and probably required on FreeBSD
+    # patchfiles-append       ${PF59x}fix-qstandardpaths6.patch \
+    #                         ${PF59x}fix-qstandardpaths-headerspri.patch \
+    #                         ${PF59x}fix-qstandardpaths-linux.patch \
+    #                         ${PF59x}patch-lookup-css-monospace-font.diff
     if {${os.platform} ne "darwin"} {
         post-patch {
             # build the QspXDG activator CMake stuff even if it doesn't do anything on Linux
@@ -351,151 +351,151 @@ if { ${subport} eq ${name} || ${subport} eq "${name}-zz-docs" || ${subport} eq "
     }
     # patch qtpaths and qtdiag:
     if {${subport} eq "${name}"} {
-        patchfiles-append   ${PF59x}patch-qtdiag-all-locations-and-qspmode.diff \
-                            ${PF59x}patch-qtpaths-all-locations.diff
+        # patchfiles-append   ${PF59x}patch-qtdiag-all-locations-and-qspmode.diff \
+        #                     ${PF59x}patch-qtpaths-all-locations.diff
         if {${os.platform} eq "darwin"} {
-            patchfiles-append \
-                            ${PF59x}patch-qtpaths-qspmode.diff
+            # patchfiles-append \
+            #                 ${PF59x}patch-qtpaths-qspmode.diff
         }
     }
-    # https://bugreports.qt.io/browse/QTBUG-31034 and https://bugreports.qt.io/browse/QTBUG-31034?focusedCommentId=277009
-    patchfiles-append       ${PF59x}patch-missing-autoreleasepools.diff
+    # # https://bugreports.qt.io/browse/QTBUG-31034 and https://bugreports.qt.io/browse/QTBUG-31034?focusedCommentId=277009
+    # patchfiles-append       ${PF59x}patch-missing-autoreleasepools.diff
 
     platform darwin {
         # these enable automatic loading of a KDE platform theme plugin
         # they're tested on Linux too but not used for "official" builds there
         if {${subport} eq ${name}} {
-            patchfiles-append \
-                            ${PF59x}patch-enable-qgenericunixthemes.diff
+            # patchfiles-append \
+            #                 ${PF59x}patch-enable-qgenericunixthemes.diff
         } elseif {${subport} eq "${name}-x11"} {
             patchfiles-append \
                             ${PF59x}patch-enable-qgenericunixthemes-xcb.diff
         }
-        patchfiles-append   ${PF59x}patch-enable-qgenericunixservices.diff
-        # and this one if probably required because of adding the genericunix stuff:
-        patchfiles-append   ${PF59x}patch-enable-fontconfig.diff
+        # patchfiles-append   ${PF59x}patch-enable-qgenericunixservices.diff
+        # # and this one if probably required because of adding the genericunix stuff:
+        # patchfiles-append   ${PF59x}patch-enable-fontconfig.diff
     }
 
-    # 2 more reported bugs
-    patchfiles-append       ${PF59x}patch-nonull-setAsDockMenu.diff \
-                            ${PF59x}patch-qkqueuefilesystemwatcher_addPaths.diff
+    # # 2 more reported bugs
+    # patchfiles-append       ${PF59x}patch-nonull-setAsDockMenu.diff \
+    #                         ${PF59x}patch-qkqueuefilesystemwatcher_addPaths.diff
 
-    # make sure the private headers are always found through the CMake files,
-    # even in an out-of-tree build
-    patchfiles-append       ${PF59x}patch-always_include_private_headers.diff
+    # # make sure the private headers are always found through the CMake files,
+    # # even in an out-of-tree build
+    # patchfiles-append       ${PF59x}patch-always_include_private_headers.diff
 
-    # print out some more info when warning about a menu item already added somewhere else
-    patchfiles-append       ${PF59x}patch-better-menuitem-insert-warning.diff
+    # # print out some more info when warning about a menu item already added somewhere else
+    # patchfiles-append       ${PF59x}patch-better-menuitem-insert-warning.diff
 
-    # it's not Qt's role to inform the user constantly if s/he removed fonts that are in Apple's fallback font list
-    patchfiles-append       ${PF59x}dont-warn-missing-fallback-fonts.patch
+    # # it's not Qt's role to inform the user constantly if s/he removed fonts that are in Apple's fallback font list
+    # patchfiles-append       ${PF59x}dont-warn-missing-fallback-fonts.patch
 
-    # patches from Ubuntu 5.3.2+dfsg-4ubuntu8 (from Vivid Vervet)
-    if {[variant_isset examples]} {
-        patchfiles-append   ${PF59x}remove_icon_from_example.patch
-                            ${PF59x}remove_google_adsense.patch
-    }
+    # # patches from Ubuntu 5.3.2+dfsg-4ubuntu8 (from Vivid Vervet)
+    # if {[variant_isset examples]} {
+    #     patchfiles-append   ${PF59x}remove_icon_from_example.patch
+    #                         ${PF59x}remove_google_adsense.patch
+    # }
 
-    patchfiles-append       ${PF59x}load_testability_from_env_var.patch \
-                            ${PF59x}disable-generic-plugin-when-others-available.patch
+    # patchfiles-append       ${PF59x}load_testability_from_env_var.patch \
+    #                         ${PF59x}disable-generic-plugin-when-others-available.patch
 
-    if {${subport} eq ${name} && ${os.platform} eq "darwin"} {
-        if {![variant_isset abort]} {
-            patchfiles-append   ${PF59x}patch-qFatal-no-abort.diff
-        }
-        # emulate QMenu sections (QMenu::addSection). This is done by adding
-        # an inactive, centred text item and a separator to the menu instead of
-        # a separator with text hint ("underlined text") when the style use doesn't
-        # support such "texted separators". This is the case notably with the native
-        # Mac style.
-        # The Qt devs refuse to see the problem with dropping potentially crucial
-        # information from menus and reject patches like this.
-        # Also improve the fallback fullscreen mode.
-        patchfiles-append   ${PF59x}patch-qmenuAddSection.diff \
-                            ${PF59x}patch-improve-fallback-fullscreen-mode.diff
-    }
+    # if {${subport} eq ${name} && ${os.platform} eq "darwin"} {
+    #     if {![variant_isset abort]} {
+    #         patchfiles-append   ${PF59x}patch-qFatal-no-abort.diff
+    #     }
+    #     # emulate QMenu sections (QMenu::addSection). This is done by adding
+    #     # an inactive, centred text item and a separator to the menu instead of
+    #     # a separator with text hint ("underlined text") when the style use doesn't
+    #     # support such "texted separators". This is the case notably with the native
+    #     # Mac style.
+    #     # The Qt devs refuse to see the problem with dropping potentially crucial
+    #     # information from menus and reject patches like this.
+    #     # Also improve the fallback fullscreen mode.
+    #     patchfiles-append   ${PF59x}patch-qmenuAddSection.diff \
+    #                         ${PF59x}patch-improve-fallback-fullscreen-mode.diff
+    # }
 
-    # patch-fontpanel.diff -> patch-assistant-fontpanel.diff for Qt 5.9
-    patchfiles-append       ${PF59x}patch-improve-fontweight-support9.diff \
-                            ${PF59x}patch-assistant-fontpanel.diff \
-                            ${PF59x}patch-fix-addappfont.diff
+    # # patch-fontpanel.diff -> patch-assistant-fontpanel.diff for Qt 5.9
+    # patchfiles-append       ${PF59x}patch-improve-fontweight-support9.diff \
+    #                         ${PF59x}patch-assistant-fontpanel.diff \
+    #                         ${PF59x}patch-fix-addappfont.diff
 
-    platform darwin {
-        patchfiles-append   ${PF59x}patch-respect-DontSwapCtrlMeta.diff
-    }
+    # platform darwin {
+    #     patchfiles-append   ${PF59x}patch-respect-DontSwapCtrlMeta.diff
+    # }
 
-    # https://codereview.qt-project.org/124643/
-    # starting with Freetype font rendering: -platform cocoa:fontengine=freetype
-    patchfiles-append       ${PF59x}patch-fix-build-when-system-freetype-is-detected.diff
-    # fix font colour due to inappropriate gamma. The XCB patch also adds
-    # an override for the event compression feature (QT_XCB_NO_COMPRESS_EVENTS)
-    patchfiles-append       ${PF59x}patch-freetype-gamma-cocoa.diff \
-                            ${PF59x}patch-xcb-fontgamma.diff
-    patchfiles-append       ${PF59x}patch-silence-qpixmap-warnings.diff
-    # do not omit pkg-config files:
-    # https://codereview.qt-project.org/#/c/140954/
-    # https://github.com/Homebrew/legacy-homebrew/commit/620baaf10c957875d9d2b958343456f0d35d15fc
-    patchfiles-append       ${PF59x}patch-restore-pc-files.diff
+    # # https://codereview.qt-project.org/124643/
+    # # starting with Freetype font rendering: -platform cocoa:fontengine=freetype
+    # patchfiles-append       ${PF59x}patch-fix-build-when-system-freetype-is-detected.diff
+    # # fix font colour due to inappropriate gamma. The XCB patch also adds
+    # # an override for the event compression feature (QT_XCB_NO_COMPRESS_EVENTS)
+    # patchfiles-append       ${PF59x}patch-freetype-gamma-cocoa.diff \
+    #                         ${PF59x}patch-xcb-fontgamma.diff
+    # patchfiles-append       ${PF59x}patch-silence-qpixmap-warnings.diff
+    # # do not omit pkg-config files:
+    # # https://codereview.qt-project.org/#/c/140954/
+    # # https://github.com/Homebrew/legacy-homebrew/commit/620baaf10c957875d9d2b958343456f0d35d15fc
+    # patchfiles-append       ${PF59x}patch-restore-pc-files.diff
 
-    # https://codereview.qt-project.org/157488 + https://codereview.qt-project.org/161056
-    patchfiles-append       ${PF59x}patch-fix-dbus-crash-at-exit.diff
-    if {${subport} eq "${name}"} {
-        # https://codereview.qt-project.org/#/c/172619/
-        patchfiles-append   ${PF59x}patch-qtconn-for-10.12.diff \
-                            ${PF59x}patch-qttools-skip-assistant.diff
-        # https://codereview.qt-project.org/181230/
-        patchfiles-append   ${PF59x}patch-cmake-warn-compile_features.diff
-        patchfiles-append   ${PF59x}patch-no-pulseaudio+gstreamer.diff
-        # https://bugreports.qt.io/browse/QTBUG-58267
-        platform darwin 13 {
-            # TODO : regroup all 109 patches
-            patchfiles-append   ${PF59x}patch-readable-selected-tab-109.diff
-        }
-        # support NSMenuFunctionKey and Qt::Key_Menu
-        patchfiles-append   ${PF59x}patch-keyboard-support-menukey.diff
-        # https://trac.macports.org/ticket/53369
-        patchfiles-append   ${PF59x}patch-use-openssl-mp.diff
-        # https://trac.macports.org/ticket/58218
-        # alternative patches available from OpenSUSE:
-        # https://build.opensuse.org/package/show/openSUSE:Leap:15.1:Update/libqt5-qtbase
-        patchfiles-append   ${PF59x}patch-openssl11-support-qt597.diff
-        # https://codereview.qt-project.org/#/c/255898/
-        patchfiles-append   ${PF59x}patch-fix-bearer+session.diff
-        platform darwin 13 {
-            # TODO : regroup all 109 patches
-            patchfiles-append   ${PF59x}/patch-firstObject-109.diff
-        }
-        # enable the VNC qpa which allows to display Qt applications remotely
-        patchfiles-append   ${PF59x}/patch-enable-vnc-qpa.diff
-        patchfiles-append   ${PF59x}/patch-handle-null-corefonts.diff
+    # # https://codereview.qt-project.org/157488 + https://codereview.qt-project.org/161056
+    # patchfiles-append       ${PF59x}patch-fix-dbus-crash-at-exit.diff
+    # if {${subport} eq "${name}"} {
+    #     # https://codereview.qt-project.org/#/c/172619/
+    #     patchfiles-append   ${PF59x}patch-qtconn-for-10.12.diff \
+    #                         ${PF59x}patch-qttools-skip-assistant.diff
+    #     # https://codereview.qt-project.org/181230/
+    #     patchfiles-append   ${PF59x}patch-cmake-warn-compile_features.diff
+    #     patchfiles-append   ${PF59x}patch-no-pulseaudio+gstreamer.diff
+    #     # https://bugreports.qt.io/browse/QTBUG-58267
+    #     platform darwin 13 {
+    #         # TODO : regroup all 109 patches
+    #         patchfiles-append   ${PF59x}patch-readable-selected-tab-109.diff
+    #     }
+    #     # support NSMenuFunctionKey and Qt::Key_Menu
+    #     patchfiles-append   ${PF59x}patch-keyboard-support-menukey.diff
+    #     # https://trac.macports.org/ticket/53369
+    #     patchfiles-append   ${PF59x}patch-use-openssl-mp.diff
+    #     # https://trac.macports.org/ticket/58218
+    #     # alternative patches available from OpenSUSE:
+    #     # https://build.opensuse.org/package/show/openSUSE:Leap:15.1:Update/libqt5-qtbase
+    #     patchfiles-append   ${PF59x}patch-openssl11-support-qt597.diff
+    #     # https://codereview.qt-project.org/#/c/255898/
+    #     patchfiles-append   ${PF59x}patch-fix-bearer+session.diff
+    #     platform darwin 13 {
+    #         # TODO : regroup all 109 patches
+    #         patchfiles-append   ${PF59x}/patch-firstObject-109.diff
+    #     }
+    #     # enable the VNC qpa which allows to display Qt applications remotely
+    #     patchfiles-append   ${PF59x}/patch-enable-vnc-qpa.diff
+    #     patchfiles-append   ${PF59x}/patch-handle-null-corefonts.diff
 
-        platform darwin {
-            # this adds printing support when using the XCB QPA (X11 mode)
-            patchfiles-append \
-                            ${PF59x}/patch-add-cups-printsupport.diff
-        }
-        # avoid a boost build failure on 10.13+
-        patchfiles-append   ${PF59x}patch-avoid-boost-autoptr-bug.diff
-        # don't initialise the network manager after calling it quits
-        patchfiles-append   ${PF59x}patch-nm-not-when-quitting.diff
+    #     platform darwin {
+    #         # this adds printing support when using the XCB QPA (X11 mode)
+    #         patchfiles-append \
+    #                         ${PF59x}/patch-add-cups-printsupport.diff
+    #     }
+    #     # avoid a boost build failure on 10.13+
+    #     patchfiles-append   ${PF59x}patch-avoid-boost-autoptr-bug.diff
+    #     # don't initialise the network manager after calling it quits
+    #     patchfiles-append   ${PF59x}patch-nm-not-when-quitting.diff
 
-    }
-    # https://codereview.qt-project.org/#/c/177188/
-    patchfiles-append       ${PF59x}patch-ibus-fix.diff
-    # avoid warnings about -Wdate-time
-    patchfiles-append       ${PF59x}patch-wdate-time.diff
+    # }
+    # # https://codereview.qt-project.org/#/c/177188/
+    # patchfiles-append       ${PF59x}patch-ibus-fix.diff
+    # # avoid warnings about -Wdate-time
+    # patchfiles-append       ${PF59x}patch-wdate-time.diff
 
-    patchfiles-append       ${PF59x}patch-printpreview-pdf-export.diff
+    # patchfiles-append       ${PF59x}patch-printpreview-pdf-export.diff
 
-    # take down the QRegExpEngine cache early so it won't try to
-    # access objects residing in unloaded library space
-    patchfiles-append       ${PF59x}patch-empty-qregexpeng-cache-early.diff
+    # # take down the QRegExpEngine cache early so it won't try to
+    # # access objects residing in unloaded library space
+    # patchfiles-append       ${PF59x}patch-empty-qregexpeng-cache-early.diff
 
-    # prevent a nullptr dereference in QLocale::monthName() (during global destruction)
-    patchfiles-append       ${PF59x}patch-qlocale-nullptr-deref.diff
+    # # prevent a nullptr dereference in QLocale::monthName() (during global destruction)
+    # patchfiles-append       ${PF59x}patch-qlocale-nullptr-deref.diff
 
-    # give runtime control over the mkspec directory used in CMake-based projects
-    patchfiles-append       ${PF59x}patch-runtime-cmake_mkspec.diff
+    # # give runtime control over the mkspec directory used in CMake-based projects
+    # patchfiles-append       ${PF59x}patch-runtime-cmake_mkspec.diff
 
     # --prefix is not recognised.
     configure.pre_args-delete --prefix=${prefix}
@@ -568,7 +568,6 @@ if { ${subport} eq ${name} || ${subport} eq "${name}-zz-docs" || ${subport} eq "
             -no-harfbuzz      \
             -openssl-runtime  \
             OPENSSL_PREFIX=${prefix} \
-            -no-xinput2       \
             -no-xcb           \
             -no-xcb-xlib
         # in Qt 5.8+ these are only available when building the main port:
@@ -612,19 +611,19 @@ if { ${subport} eq ${name} || ${subport} eq "${name}-zz-docs" || ${subport} eq "
         configure.env-append "LD_LIBRARY_PATH=${prefix}/lib:${prefix}/lib/${build_arch}-linux-gnu"
         build.env-append "LD_LIBRARY_PATH=${prefix}/lib:${prefix}/lib/${build_arch}-linux-gnu"
     }
-    patchfiles-append \
-                ${PF59x}/patch-toolchainprf.diff \
-                ${PF59x}/patch-configurejsons.diff
+    # patchfiles-append \
+    #             ${PF59x}/patch-toolchainprf.diff \
+    #             ${PF59x}/patch-configurejsons.diff
 
-    post-patch {
-        file copy -force ${filespath}/${PF59x}/save-as-pdf-24.png ${worksrcpath}/qtbase/src/printsupport/dialogs/images/
-        file copy -force ${filespath}/${PF59x}/save-as-pdf-32.png ${worksrcpath}/qtbase/src/printsupport/dialogs/images/
-        reinplace -W ${worksrcpath}/qtbase "s|@PREFIX@|${prefix}|g" \
-                mkspecs/features/toolchain.prf \
-                src/platformsupport/themes/genericunix/qgenericunixthemes.cpp \
-                src/network/ssl/qsslsocket_openssl_symbols.cpp \
-                src/corelib/io/qstandardpaths_unix.cpp
-    }
+    # post-patch {
+    #     file copy -force ${filespath}/${PF59x}/save-as-pdf-24.png ${worksrcpath}/qtbase/src/printsupport/dialogs/images/
+    #     file copy -force ${filespath}/${PF59x}/save-as-pdf-32.png ${worksrcpath}/qtbase/src/printsupport/dialogs/images/
+    #     reinplace -W ${worksrcpath}/qtbase "s|@PREFIX@|${prefix}|g" \
+    #             mkspecs/features/toolchain.prf \
+    #             src/platformsupport/themes/genericunix/qgenericunixthemes.cpp \
+    #             src/network/ssl/qsslsocket_openssl_symbols.cpp \
+    #             src/corelib/io/qstandardpaths_unix.cpp
+    # }
 
 # Additional options:
     configure.args-append    \
@@ -660,43 +659,43 @@ if { ${subport} eq ${name} || ${subport} eq "${name}-zz-docs" || ${subport} eq "
     }
 
 
-    if {${subport} eq "${name}-x11"} {
-        # patch-fontpanel.diff -> patch-assistant-fontpanel.diff for Qt 5.9
-        patchfiles-delete       ${PF59x}patch-assistant-fontpanel.diff
-        patchfiles-append       ${PF59x}patch-to-build-xcb.diff \
-                                ${PF59x}patch-xcb-silence-xvisual-warning.diff
-        post-patch {
-            # avoid introducing dependencies on the OpenGL frameworks; that means not building the cocoa QPA
-            # which is fine because we don't need it (and it's already installed).
-            set ext "pro"
-            reinplace -W ${worksrcpath}/qtbase/src "s|mac:|cocoa:|g" platformsupport/cglconvenience/cglconvenience.${ext}
-            reinplace -W ${worksrcpath}/qtbase/src "s|mac |cocoa |g" plugins/platforms/platforms.pro
-        }
-        configure.args-delete   -no-xinput2 -no-xcb -no-xcb-xlib
-        configure.args-append   -xcb -xcb-xlib -qpa xcb
-        patchfiles-append       ${PF59x}patch-xcb-XOpenGL-full.diff \
-                                ${PF59x}patch-xcb-use-qgenunixfontdb.diff
-    } else {
-        # make sure that the Designer doesn't try to use a global menubar when using the xcb plugin.
-        # Yes, this patch has to be applied when building the master port, not the xcb plugin subport...
-        patchfiles-append       ${PF59x}patch-designer-show-menubar-on-xcb.diff
-        # patch for building on 10.13:
-        patchfiles-append       ${PF59x}patch-qtscript_ceil.diff
-        # the opposite of patch-xcb-use-qgenunixfontdb.diff; allow building with fontconfig
-        # (complement to patch-enable-fontconfig.diff)
-        patchfiles-append       ${PF59x}patch-qcocoa-use-qcoretextfontdb.diff
-        # configure options that don't show up in configure --help
-        # https://bugreports.qt.io/browse/QTBUG-69734
-        # https://codereview.qt-project.org/236047
-        patchfiles-append       ${PF59x}patch-qpa+coreaudio-outplugin.diff
-    }
-    # print out some additional debugging info when copying to the X11 clipboard fails
-    # (This happens only under XQuartz, OR only has a negative effect there)
-    patchfiles-append           ${PF59x}patch-xcbclipboard-debugging.diff
+    # if {${subport} eq "${name}-x11"} {
+    #     # patch-fontpanel.diff -> patch-assistant-fontpanel.diff for Qt 5.9
+    #     patchfiles-delete       ${PF59x}patch-assistant-fontpanel.diff
+    #     patchfiles-append       ${PF59x}patch-to-build-xcb.diff \
+    #                             ${PF59x}patch-xcb-silence-xvisual-warning.diff
+    #     post-patch {
+    #         # avoid introducing dependencies on the OpenGL frameworks; that means not building the cocoa QPA
+    #         # which is fine because we don't need it (and it's already installed).
+    #         set ext "pro"
+    #         reinplace -W ${worksrcpath}/qtbase/src "s|mac:|cocoa:|g" platformsupport/cglconvenience/cglconvenience.${ext}
+    #         reinplace -W ${worksrcpath}/qtbase/src "s|mac |cocoa |g" plugins/platforms/platforms.pro
+    #     }
+    #     configure.args-delete   -no-xinput2 -no-xcb -no-xcb-xlib
+    #     configure.args-append   -xcb -xcb-xlib -qpa xcb
+    #     patchfiles-append       ${PF59x}patch-xcb-XOpenGL-full.diff \
+    #                             ${PF59x}patch-xcb-use-qgenunixfontdb.diff
+    # } else {
+    #     # make sure that the Designer doesn't try to use a global menubar when using the xcb plugin.
+    #     # Yes, this patch has to be applied when building the master port, not the xcb plugin subport...
+    #     patchfiles-append       ${PF59x}patch-designer-show-menubar-on-xcb.diff
+    #     # patch for building on 10.13:
+    #     patchfiles-append       ${PF59x}patch-qtscript_ceil.diff
+    #     # the opposite of patch-xcb-use-qgenunixfontdb.diff; allow building with fontconfig
+    #     # (complement to patch-enable-fontconfig.diff)
+    #     patchfiles-append       ${PF59x}patch-qcocoa-use-qcoretextfontdb.diff
+    #     # configure options that don't show up in configure --help
+    #     # https://bugreports.qt.io/browse/QTBUG-69734
+    #     # https://codereview.qt-project.org/236047
+    #     patchfiles-append       ${PF59x}patch-qpa+coreaudio-outplugin.diff
+    # }
+    # # print out some additional debugging info when copying to the X11 clipboard fails
+    # # (This happens only under XQuartz, OR only has a negative effect there)
+    # patchfiles-append           ${PF59x}patch-xcbclipboard-debugging.diff
 
     platform darwin {
         if {${subport} eq "${name}-zz-docs"} {
-            configure.args-delete   -no-xinput2 -no-xcb -no-xcb-xlib
+            configure.args-delete   -no-xcb -no-xcb-xlib
             configure.args-append   -xcb -xcb-xlib
         }
 
@@ -741,16 +740,16 @@ if { ${subport} eq ${name} || ${subport} eq "${name}-zz-docs" || ${subport} eq "
             }
         }
 
-        # We don't want qmake to 2nd-guess the compiler we specify in our mkspec and
-        # replace it with an Xcode compiler determined by xcrun.
-        # 20150723: also exclude the QMAKE_LINK commands from being determined by xcrun
-        # 20171218: NOTE: mcalhoun proposed change (cf. https://codereview.qt-project.org/141654/)
-        #   is contrary to my intention here so we don't include is patch-add_sdk.diff patch.
-        patchfiles-append       ${PF59x}patch-sdk.prf-xcrun-not-for-compilers.diff
-        # UsingTheRightCompiler:
-        patchfiles-append       ${PF59x}patch-clangconf.diff
-        # more patches from port:qt5 (@5.9.2):
-        patchfiles-append       ${PF59x}patch-find_rez.diff
+        # # We don't want qmake to 2nd-guess the compiler we specify in our mkspec and
+        # # replace it with an Xcode compiler determined by xcrun.
+        # # 20150723: also exclude the QMAKE_LINK commands from being determined by xcrun
+        # # 20171218: NOTE: mcalhoun proposed change (cf. https://codereview.qt-project.org/141654/)
+        # #   is contrary to my intention here so we don't include is patch-add_sdk.diff patch.
+        # patchfiles-append       ${PF59x}patch-sdk.prf-xcrun-not-for-compilers.diff
+        # # UsingTheRightCompiler:
+        # patchfiles-append       ${PF59x}patch-clangconf.diff
+        # # more patches from port:qt5 (@5.9.2):
+        # patchfiles-append       ${PF59x}patch-find_rez.diff
 
         if {${os.major} == 13} {
             # "backport" stripped code for OS X 10.9 and make a few tweaks to allow
@@ -792,9 +791,9 @@ if { ${subport} eq ${name} || ${subport} eq "${name}-zz-docs" || ${subport} eq "
                 }
                 # else not yet needed.
             }
-            reinplace -W ${worksrcpath}/qtbase "s|__MACPORTS_Rez__|[exec xcrun --find Rez]|g" \
-                                mkspecs/common/mac.conf \
-                                mkspecs/features/mac/rez.prf
+            # reinplace -W ${worksrcpath}/qtbase "s|__MACPORTS_Rez__|[exec xcrun --find Rez]|g" \
+            #                     mkspecs/common/mac.conf \
+            #                     mkspecs/features/mac/rez.prf
             # UsingTheRightCompiler:
             reinplace -W ${worksrcpath}/qtbase/mkspecs/common "s|macportsclang++|${configure.cxx}|g" clang.conf
             reinplace -W ${worksrcpath}/qtbase/mkspecs/common "s|macportsclang|${configure.cc}|g" clang.conf
@@ -838,11 +837,11 @@ if { ${subport} eq ${name} || ${subport} eq "${name}-zz-docs" || ${subport} eq "
         }
     }
     # new patches for Qt 5.9
-    patchfiles-append           ${PF59x}patch-fix-qtMacWindow-WIP.diff \
-                                ${PF59x}patch-macstyle-checks-if-cocoa.diff \
-                                ${PF59x}patch-col+font-dialog-fix.diff \
-                                ${PF59x}patch-qcocoa-add-aqua-themehint.diff \
-                                ${PF59x}patch-mkspecs.diff
+    # patchfiles-append           ${PF59x}patch-fix-qtMacWindow-WIP.diff \
+    #                             ${PF59x}patch-macstyle-checks-if-cocoa.diff \
+    #                             ${PF59x}patch-col+font-dialog-fix.diff \
+    #                             ${PF59x}patch-qcocoa-add-aqua-themehint.diff \
+    #                             ${PF59x}patch-mkspecs.diff
 
     # Qt builds part of the system using environment provided by MacPorts.
     # It builds the rest using its own internal environment.
@@ -865,53 +864,53 @@ if { ${subport} eq ${name} || ${subport} eq "${name}-zz-docs" || ${subport} eq "
     configure.universal_cxxflags
     configure.universal_cppflags
 
-    # patches for improving the KDE experience (and facilitating debugging)
-    patchfiles-append       ${PF59x}patch-enable-dumpObjectInfo.diff
-    patchfiles-append       ${PF59x}deactivate-menurole-heuristics.patch \
-                            ${PF59x}debug-negative-qtimerint.patch
-    # don't qFatal() in QObjectPrivate when running a library built against
-    # a slightly older (patchlevel) QtCore version. Code might crash but won't
-    # be aborted (= crash) immediately.
-    patchfiles-append       ${PF59x}patch-qobjpriv-allow-older-versions.diff
+    # # patches for improving the KDE experience (and facilitating debugging)
+    # patchfiles-append       ${PF59x}patch-enable-dumpObjectInfo.diff
+    # patchfiles-append       ${PF59x}deactivate-menurole-heuristics.patch \
+    #                         ${PF59x}debug-negative-qtimerint.patch
+    # # don't qFatal() in QObjectPrivate when running a library built against
+    # # a slightly older (patchlevel) QtCore version. Code might crash but won't
+    # # be aborted (= crash) immediately.
+    # patchfiles-append       ${PF59x}patch-qobjpriv-allow-older-versions.diff
 
-    # backport certain things from future Qt versions;
-    # 20180907: Q*String::front() and Q*String::back()
-    #           QRandomGenerator64 and QRandomGenerator
-    # 20190707: also backport QStringView. Note that the corresponding changes
-    # to headers.pri are included in patch-backport-from-future.diff!!
-    patchfiles-append       ${PF59x}patch-backport-qstringview510.diff \
-                            ${PF59x}patch-backport-from-future.diff
-    # 20190112: #2ca187ca allow NOTIFY signals defined in parent classes (5.10)
-    patchfiles-append       ${PF59x}patch-backport-from-future2.diff
-    # 20190112: QMetaObject::invokeMethod() that accepts a functor (5.10)
-    patchfiles-append       ${PF59x}patch-backport-from-future3.diff
-    # 20190114: QStyle: deprecate SH_Widget_Animate in favor of SH_Widget_Animation_Duration (5.10)
-    #                   (and a whiff of SH_TitleBar_ShowToolTipsOnButtons)
-    patchfiles-append       ${PF59x}patch-backport-from-future4.diff
-    # 20190707: backport all 5.9 -> 5.10 QtTest changes
-    patchfiles-append       ${PF59x}patch-qttest-59_510.diff
+    # # backport certain things from future Qt versions;
+    # # 20180907: Q*String::front() and Q*String::back()
+    # #           QRandomGenerator64 and QRandomGenerator
+    # # 20190707: also backport QStringView. Note that the corresponding changes
+    # # to headers.pri are included in patch-backport-from-future.diff!!
+    # patchfiles-append       ${PF59x}patch-backport-qstringview510.diff \
+    #                         ${PF59x}patch-backport-from-future.diff
+    # # 20190112: #2ca187ca allow NOTIFY signals defined in parent classes (5.10)
+    # patchfiles-append       ${PF59x}patch-backport-from-future2.diff
+    # # 20190112: QMetaObject::invokeMethod() that accepts a functor (5.10)
+    # patchfiles-append       ${PF59x}patch-backport-from-future3.diff
+    # # 20190114: QStyle: deprecate SH_Widget_Animate in favor of SH_Widget_Animation_Duration (5.10)
+    # #                   (and a whiff of SH_TitleBar_ShowToolTipsOnButtons)
+    # patchfiles-append       ${PF59x}patch-backport-from-future4.diff
+    # # 20190707: backport all 5.9 -> 5.10 QtTest changes
+    # patchfiles-append       ${PF59x}patch-qttest-59_510.diff
 
-    # prevent a rare crash opening a QFontComboBox widget
-    # https://bugreports.qt.io/browse/QTBUG-76120
-    # also, introduce $QT_FONTCOMBOBOX_NO_PREVIEW to disable previews in those widgets.
-    patchfiles-append       ${PF59x}patch-prevent-qcombobox-crash.diff \
-                            ${PF59x}patch-qfontcombox-nopreview.diff
-    # prevent a crash on certain unconnected HttpSocketEngine operations
-    patchfiles-append       ${PF59x}patch-httpsockeng-fix.diff
-    # Mac OS 10.15 chokes on the mapbox-gl plugin; disable it everywhere.
-    patchfiles-append       ${PF59x}patch-no-mapboxgl.diff
-    # fix ambiguous conversions in qtconnectivity (on 10.15+)
-    patchfiles-append       ${PF59x}patch-fix-qtconn-ambigconv.diff
-    # fix a build failure due to undefined PATH_MAX with clang 5 under Linux
-    patchfiles-append       ${PF59x}patch-path_max.diff
+    # # prevent a rare crash opening a QFontComboBox widget
+    # # https://bugreports.qt.io/browse/QTBUG-76120
+    # # also, introduce $QT_FONTCOMBOBOX_NO_PREVIEW to disable previews in those widgets.
+    # patchfiles-append       ${PF59x}patch-prevent-qcombobox-crash.diff \
+    #                         ${PF59x}patch-qfontcombox-nopreview.diff
+    # # prevent a crash on certain unconnected HttpSocketEngine operations
+    # patchfiles-append       ${PF59x}patch-httpsockeng-fix.diff
+    # # Mac OS 10.15 chokes on the mapbox-gl plugin; disable it everywhere.
+    # patchfiles-append       ${PF59x}patch-no-mapboxgl.diff
+    # # fix ambiguous conversions in qtconnectivity (on 10.15+)
+    # patchfiles-append       ${PF59x}patch-fix-qtconn-ambigconv.diff
+    # # fix a build failure due to undefined PATH_MAX with clang 5 under Linux
+    # patchfiles-append       ${PF59x}patch-path_max.diff
 
-    # see https://github.com/RJVB/macstrop/issues/88
-    platform darwin {
-        if {${os.major} >= 21} {
-            patchfiles-append \
-                            ${PF598}patc-fix-asm-volatile.diff
-        }
-    }
+    # # see https://github.com/RJVB/macstrop/issues/88
+    # platform darwin {
+    #     if {${os.major} >= 21} {
+    #         patchfiles-append \
+    #                         ${PF598}patc-fix-asm-volatile.diff
+    #     }
+    # }
 
     platform darwin {
         configure.args-append \
@@ -1102,19 +1101,19 @@ if { (${subport} eq ${name}) || (${subport} eq "${name}-x11") } {
 
     if {${subport} ne "${name}-x11"} {
         platform darwin {
-            # variant mariadb55 conflicts mysql56 mysql57 description {use MariaDB v5.5} {}
-            # variant mysql56 conflicts mariadb55 mysql57 description {use MySQL v5.6} {}
-            # variant mysql57 conflicts mariadb55 mysql56 description {use MySQL v5.7} {}
-            # switch_variant mysql56 mysql57 {
-            #     "mysql56" -
-            #     "mysql57" {
-            #         depends_lib-append port:${variant}
-            #     }
-            #     default {
-            #         default_variants-append +mariadb55
-            #         depends_lib-append port:mariadb
-            #     }
-            # }
+            variant mariadb55 conflicts mysql56 mysql57 description {use MariaDB v5.5} {}
+            variant mysql56 conflicts mariadb55 mysql57 description {use MySQL v5.6} {}
+            variant mysql57 conflicts mariadb55 mysql56 description {use MySQL v5.7} {}
+            switch_variant mysql56 mysql57 {
+                "mysql56" -
+                "mysql57" {
+                    depends_lib-append port:${variant}
+                }
+                default {
+                    default_variants-append +mariadb55
+                    depends_lib-append port:mariadb
+                }
+            }
 
             variant gstreamer description {build GStreamer support, needed for the QAudioDecoder class} {}
             if {[variant_isset gstreamer]} {
@@ -1711,8 +1710,8 @@ subport ${name}-qtwebengine {
             distname        qtwebengine-opensource-src-${version}
             distfiles       ${distname}${extract.suffix}
             master_sites    http://download.qt.io/archive/qt/${branch}/${version}/submodules/
-            checksums       rmd160  cb0789067b954fb14e950b1704450dc513fd1181 \
-                            sha256  223d22f1660811e60677afe0a85f2f385823e25157689561489700c5d1da79be
+            checksums       md5     47d0a691e64af67092fc4bded6d14952 \
+                            sha256  8a2a903bcf2c45d8981f90fdfe96a9413d6fcfa0510e45c407a41a9b6bda0fca
             patch.pre_args  -Np2
         } elseif {[vercmp ${macosx_deployment_target} 10.9] <= 0} {
             ui_error "qtwebengine ${version} won't build"
@@ -2047,28 +2046,28 @@ foreach sp ${qt5.kde_stubports} {
                 # we're a stub but we still should pass through relevant variants
                 variant qtwebkit description {enable QtWebKit in the Assistant} {}
             }
-            # "mysql-plugin" {
-            #     PortGroup active_variants 1.1
-            #     description     stub\; part of port:${name}
-            #     long_description \
-            #                     this is a stub subport for Qt5's ${sp} which is included in port:${name}
-            #     # we're a stub but we still should pass through relevant variants
-            #     variant mariadb55 conflicts mysql56 mysql57 description {use MariaDB v5.5} {}
-            #     variant mysql56 conflicts mariadb55 mysql57 description {use MySQL v5.6} {}
-            #     variant mysql57 conflicts mariadb55 mysql56 description {use MySQL v5.7} {}
-            #     switch_variant mariadb55 mysql56 mysql57 {
-            #         "mysql56" -
-            #         "mysql57" {
-            #             global qt5_dependency
-            #             require_active_variants ${qt5_dependency} ${variant}
-            #         }
-            #         default {
-            #             global qt5_dependency
-            #             default_variants-append +mariadb55
-            #             require_active_variants ${qt5_dependency} mariadb55
-            #         }
-            #     }
-            # }
+            "mysql-plugin" {
+                PortGroup active_variants 1.1
+                description     stub\; part of port:${name}
+                long_description \
+                                this is a stub subport for Qt5's ${sp} which is included in port:${name}
+                # we're a stub but we still should pass through relevant variants
+                variant mariadb55 conflicts mysql56 mysql57 description {use MariaDB v5.5} {}
+                variant mysql56 conflicts mariadb55 mysql57 description {use MySQL v5.6} {}
+                variant mysql57 conflicts mariadb55 mysql56 description {use MySQL v5.7} {}
+                switch_variant mariadb55 mysql56 mysql57 {
+                    "mysql56" -
+                    "mysql57" {
+                        global qt5_dependency
+                        require_active_variants ${qt5_dependency} ${variant}
+                    }
+                    default {
+                        global qt5_dependency
+                        default_variants-append +mariadb55
+                        require_active_variants ${qt5_dependency} mariadb55
+                    }
+                }
+            }
             default {
                 description     stub\; part of port:${name}
                 long_description \
